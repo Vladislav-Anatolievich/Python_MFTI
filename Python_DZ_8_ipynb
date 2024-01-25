@@ -1,0 +1,192 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "8434df72",
+   "metadata": {},
+   "source": [
+    "## Homework 8"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "774aebf7",
+   "metadata": {},
+   "source": [
+    "### Task 1"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "3cb07b47",
+   "metadata": {},
+   "source": [
+    "Игра убыточна для игрока и прибыльна для казино (клуба).\n",
+    "Эксперементальная стоимость (100 миллионов итераций):  -0.19951263\n",
+    "Теоретическая (рассчетная) стоимость:  -0.2\n",
+    "В среднем за игру игрок теряет 0.2 у.е. (0.1995 у.е)\n",
+    "Теоретический расчет соответствует эксперементальному."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 244,
+   "id": "22db2838",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import numpy as np\n",
+    "import re"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 426,
+   "id": "76e64f20",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Эксперементальная вероятность (100 миллионов итераций):  -0.19951263\n",
+      "CPU times: user 4min 35s, sys: 691 ms, total: 4min 35s\n",
+      "Wall time: 4min 35s\n"
+     ]
+    }
+   ],
+   "source": [
+    "%%time\n",
+    "profit = 0\n",
+    "length = 100_000_000\n",
+    "for i in range(length):\n",
+    "    profit -= 1\n",
+    "    item = round(np.random.uniform(0, 1000))\n",
+    "    for i in range(1):\n",
+    "        if item > 99:\n",
+    "            item = str(item)\n",
+    "            if re.search('777', item):\n",
+    "                profit += 200\n",
+    "                break\n",
+    "            if re.search('\\d77', item):\n",
+    "                profit += 5\n",
+    "                break\n",
+    "            if re.search('\\d\\d7', item):\n",
+    "                profit += 3\n",
+    "                break\n",
+    "\n",
+    "            if re.search('999', item):\n",
+    "                profit += 100\n",
+    "                break\n",
+    "            if re.search('555', item):\n",
+    "                profit += 50\n",
+    "                break\n",
+    "            if re.search('333', item):\n",
+    "                profit += 15\n",
+    "                break\n",
+    "            if re.search('111', item):\n",
+    "                profit += 10\n",
+    "                break\n",
+    "\n",
+    "            if re.search('\\d00', item):\n",
+    "                profit += 2\n",
+    "                break\n",
+    "            if re.search('\\d\\d0', item):\n",
+    "                profit += 1\n",
+    "                break\n",
+    "                \n",
+    "        if int(item) <= 99:\n",
+    "            item = str(item)\n",
+    "            if int(item) == 7:\n",
+    "                profit += 3\n",
+    "                break\n",
+    "            if int(item) == 77:\n",
+    "                profit += 5\n",
+    "                break\n",
+    "            if re.search('\\d7', item):\n",
+    "                profit += 3\n",
+    "                break\n",
+    "            if int(item) == 0:\n",
+    "                profit += 2\n",
+    "                break\n",
+    "            if re.search('\\d0', item):\n",
+    "                profit += 1\n",
+    "                break\n",
+    "print(\"Эксперементальная стоимость (100 миллионов итераций): \", profit / length)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 427,
+   "id": "ce1f7c5a",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Теоретическая (рассчетная) стоимость:  -0.2\n"
+     ]
+    }
+   ],
+   "source": [
+    "count_777 = 0\n",
+    "count_77 = 0\n",
+    "count_7 = 0\n",
+    "count_00 = 0\n",
+    "count_0 = 0\n",
+    "for i in range(1000):\n",
+    "    if i < 10:\n",
+    "        if i == 7:\n",
+    "            count_7 += 1\n",
+    "        elif i == 0:\n",
+    "            count_00 += 1\n",
+    "    elif 10 <= i < 100:\n",
+    "        if i == 77:\n",
+    "            count_77 += 1\n",
+    "        elif re.search('\\d7', str(i)):\n",
+    "            count_7 += 1\n",
+    "        elif re.search('\\d0', str(i)):\n",
+    "            count_0 += 1\n",
+    "    elif 100 <= i < 1000:\n",
+    "        if i == 777:\n",
+    "            count_777 += 1\n",
+    "        elif re.search('\\d00', str(i)):\n",
+    "            count_00 += 1\n",
+    "        elif re.search('\\d\\d0', str(i)):\n",
+    "            count_0 += 1\n",
+    "        elif re.search('\\d77', str(i)):\n",
+    "            count_77 += 1\n",
+    "        elif re.search('\\d\\d7', str(i)):\n",
+    "            count_7 += 1\n",
+    "        \n",
+    "ver = count_777 + count_77 + count_7 + count_00 + count_0 + 4\n",
+    "res = count_777 * 199 + count_77 * 4 + count_7 * 2 + count_00 * 1 + count_0 * 0\\\n",
+    "+ 1 * 99 + 1 * 49 + 1 * 14 + 1 * 9 - 796 * 1\n",
+    "res = res / 1000\n",
+    "print(\"Теоретическая (рассчетная) стоимость: \", res)"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3 (ipykernel)",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.11.5"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}
